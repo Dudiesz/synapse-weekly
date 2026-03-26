@@ -1,0 +1,57 @@
+# --- Segurança e Credenciais (CRÍTICO) ---
+.env
+.env.local
+.env.*
+*.key
+secrets.json
+
+# --- Ambientes Virtuais ---
+venv/
+.venv/
+env/
+ENV/
+bin/
+lib/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Cache e Compilação Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Outputs do Projeto (Não subir relatórios gerados) ---
+# Queremos a estrutura de pastas, mas não os arquivos finais.
+outputs/reports/*.md
+outputs/pdfs/*.pdf
+*.log
+
+# --- CrewAI & Embeddings (Se usar memória local) ---
+db/
+.crewai/
+
+# --- IDEs e Editores ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints
