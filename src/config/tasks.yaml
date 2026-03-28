@@ -10,4 +10,13 @@ tarefa_pesquisa:
     4. Garanta que a data da notícia seja de, no máximo, 7 dias atrás.
   expected_output: >
     Uma lista organizada contendo: Título, um resumo técnico extraído da fonte e a URL original.
-  agent: scout_tecnico
+
+tarefa_redacao_jornal:
+  description: >
+    Com base na pesquisa, escreva a edição do jornal Synapse Weekly para {current_date}.
+    O público alvo são {target_audience}. 
+    Mantenha o tom de 'Monitor Veterano': didático, sem jargões desnecessários 
+    e focado no que o aluno precisa saber para o mercado. 
+    Explique conceitos complexos com analogias simples.
+  expected_output: >
+    O conteúdo completo do jornal em Markdown formatado, pronto para ser lido por humanos.

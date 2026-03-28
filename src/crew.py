@@ -2,39 +2,47 @@ import os
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
+from langchain_google_genai import ChatGoogleGenerativeAI #
 
 @CrewBase
 class SynapseWeeklyCrew():
-    """Orquestrador do Synapse Weekly - Jornal de IA para Estudantes"""
+    """Orquestrador do Synapse Weekly - Edição Gemini"""
 
-    # Caminhos para os arquivos de configuração (Relativos à raiz ou ao arquivo)
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
+    def __init__(self):
+        # No seu src/crew.py
+        self.gemini_llm = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash", # Troque o 1.5 por 2.0 ou 3-flash
+            verbose=True,
+            temperature=0.5,
+            google_api_key=os.getenv("GEMINI_API_KEY")
+)
+
     @agent
     def scout_tecnico(self) -> Agent:
-        """Agente responsável por minerar a web atrás de novidades reais."""
         return Agent(
             config=self.agents_config['scout_tecnico'],
-            tools=[SerperDevTool()], # Motor de busca injetado
+            tools=[SerperDevTool()],
+            llm=self.gemini_llm,
             verbose=True,
             allow_delegation=False,
-            memory=True, # Permite que ele mantenha contexto entre buscas
-            max_iter=10  # Limite para não gastar tokens infinitamente se não achar algo
+            memory=True,
+            max_iter=10
         )
 
     @agent
     def monitor_veterano(self) -> Agent:
-        """Agente responsável pela curadoria e tradução didática para os calouros."""
         return Agent(
             config=self.agents_config['monitor_veterano'],
+            llm=self.gemini_llm,
             verbose=True,
-            allow_delegation=True # O monitor pode pedir esclarecimentos ao scout se algo estiver confuso
+            allow_delegation=True
         )
 
     @task
     def tarefa_pesquisa(self) -> Task:
-        """Task de extração de dados brutos da última semana."""
         return Task(
             config=self.tasks_config['tarefa_pesquisa'],
             agent=self.scout_tecnico()
@@ -42,20 +50,18 @@ class SynapseWeeklyCrew():
 
     @task
     def tarefa_redacao_jornal(self) -> Task:
-        """Task de síntese, tradução didática e formatação final."""
         return Task(
             config=self.tasks_config['tarefa_redacao_jornal'],
             agent=self.monitor_veterano(),
-            context=[self.tarefa_pesquisa()], # Garante que ele use o output da pesquisa
-            output_file='outputs/reports/jornal_da_semana.md' # Persistência do resultado
+            context=[self.tarefa_pesquisa()],
+            output_file='outputs/reports/jornal_da_semana.md'
         )
 
     @crew
     def crew(self) -> Crew:
-        """Define a assembleia dos agentes e a ordem de execução."""
         return Crew(
-            agents=self.agents, # Coleta automaticamente os métodos decorados com @agent
-            tasks=self.tasks,   # Coleta automaticamente os métodos decorados com @task
-            process=Process.sequential, # Ordem lógica: Pesquisa -> Redação
+            agents=self.agents,
+            tasks=self.tasks,
+            process=Process.sequential,
             verbose=True
         )
