@@ -2,43 +2,43 @@ import os
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
-from langchain_google_genai import ChatGoogleGenerativeAI #
+from langchain_groq import ChatGroq
 
 @CrewBase
 class SynapseWeeklyCrew():
-    """Orquestrador do Synapse Weekly - Edição Gemini"""
+    """Orquestrador do Synapse Weekly - Edição Estável Groq"""
 
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
 
-    def __init__(self):
-        # No seu src/crew.py
-        self.gemini_llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash", # Troque o 1.5 por 2.0 ou 3-flash
-            verbose=True,
+    def __init__(self) -> None:
+        # Configuramos o Llama 3.3 via Groq como o cérebro do sistema
+        # Este modelo é rápido e lida bem com textos didáticos
+        self.groq_llm = ChatGroq(
             temperature=0.5,
-            google_api_key=os.getenv("GEMINI_API_KEY")
-)
+            model_name="llama-3.3-70b-versatile",
+            groq_api_key=os.getenv("GROQ_API_KEY")
+        )
 
     @agent
     def scout_tecnico(self) -> Agent:
         return Agent(
             config=self.agents_config['scout_tecnico'],
             tools=[SerperDevTool()],
-            llm=self.gemini_llm,
+            llm=self.groq_llm,
             verbose=True,
-            allow_delegation=False,
+            allow_delegation=False, # Impede loops de conversa indevidos
             memory=True,
-            max_iter=10
+            max_iter=3 # Protege sua cota de tokens (TPM)
         )
 
     @agent
     def monitor_veterano(self) -> Agent:
         return Agent(
             config=self.agents_config['monitor_veterano'],
-            llm=self.gemini_llm,
+            llm=self.groq_llm,
             verbose=True,
-            allow_delegation=True
+            allow_delegation=False # Impede o erro de 'Co-worker not found'
         )
 
     @task
@@ -53,15 +53,16 @@ class SynapseWeeklyCrew():
         return Task(
             config=self.tasks_config['tarefa_redacao_jornal'],
             agent=self.monitor_veterano(),
-            context=[self.tarefa_pesquisa()],
+            context=[self.tarefa_pesquisa()], # Passa os dados da busca para a redação
             output_file='outputs/reports/jornal_da_semana.md'
         )
 
     @crew
     def crew(self) -> Crew:
+        """Cria a equipe Synapse Weekly"""
         return Crew(
-            agents=self.agents,
-            tasks=self.tasks,
+            agents=self.agents, # Criado automaticamente pelos decoradores @agent
+            tasks=self.tasks,   # Criado automaticamente pelos decoradores @task
             process=Process.sequential,
             verbose=True
         )

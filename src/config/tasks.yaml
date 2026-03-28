@@ -13,10 +13,16 @@ tarefa_pesquisa:
 
 tarefa_redacao_jornal:
   description: >
-    Com base na pesquisa, escreva a edição do jornal Synapse Weekly para {current_date}.
-    O público alvo são {target_audience}. 
-    Mantenha o tom de 'Monitor Veterano': didático, sem jargões desnecessários 
-    e focado no que o aluno precisa saber para o mercado. 
-    Explique conceitos complexos com analogias simples.
+    Sua missão é atuar como um Editor-Chefe crítico. Analise as notícias reais 
+    trazidas pelo Scout e selecione as 5 que possuem maior impacto técnico ou social.
+    
+    DIRETRIZES DE REDAÇÃO:
+    1. PROIBIDO explicar "o que é IA" ou definições básicas. O leitor é um estudante de tecnologia.
+    2. FOCO NO IMPACTO: Se uma pesquisa saiu, explique o diferencial técnico. Se uma empresa 
+       teve falha ou as ações caíram, analise o motivo (ex: gargalo de infraestrutura, erro de ética).
+    3. SEM FILTRO COMERCIAL: Não tente "vender" o produto. Se a notícia for ruim, reporte como tal.
+    4. ESTRUTURA: Organize em "Avanços Técnicos", "Impacto no Mercado" e "Riscos & Ética".
+    5. FIDELIDADE: Use apenas os links e fatos reais da pesquisa.
   expected_output: >
-    O conteúdo completo do jornal em Markdown formatado, pronto para ser lido por humanos.
+    Um boletim informativo denso e analítico em Markdown, focado em fatos reais e 
+    implicações para a carreira dos estudantes.
